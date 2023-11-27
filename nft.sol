@@ -29,10 +29,12 @@ contract BasicNFT is ERC721URIStorage {
     mapping (uint256 => address) ownedNFTs;
     Randomizer randomizer;
 
-    constructor() ERC721("BasicNFT", "BNFT") {}
+    constructor() ERC721("BasicNFT", "BNFT") {
+        createNFTs(5);
+    }
 
-    function createNFTs(uint NFTsCount) {
-        for(uint i=0; i<NFTsCount; i++){
+    function createNFTs(uint NFTsCount) private{
+        for(uint i = 0; i < NFTsCount; i++){
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
 
