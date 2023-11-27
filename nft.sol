@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 
 contract Randomizer
@@ -22,8 +21,7 @@ contract Randomizer
 
 
 contract BasicNFT is ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256[] tokenIDs;
     mapping (uint256 => uint256) pricesOfNFTs;
     mapping (address => uint256) balances;
     mapping (uint256 => address) ownedNFTs;
@@ -34,12 +32,13 @@ contract BasicNFT is ERC721URIStorage {
     }
 
     function createNFTs(uint NFTsCount) private{
+        currentID = 1;
         for(uint i = 0; i < NFTsCount; i++){
-            _tokenIds.increment();
-            uint256 newItemId = _tokenIds.current();
+            tokenIDs.push(currentID);
 
-            pricesOfNFTs[newItemId] = randomizer.randMod(10);
-            ownedNFTs[newItemId] = address(0);
+            pricesOfNFTs[currentID] = randomizer.randMod(10);
+            ownedNFTs[currentID] = address(0);
+            currentID++;
         }
     }
 
@@ -60,5 +59,15 @@ contract BasicNFT is ERC721URIStorage {
         balances[msg.sender] = balances[msg.sender] + pricesOfNFTs[tokenID];
 //        Change address of NFT
         ownedNFTs[tokenID] = address(0);
+    }
+
+    function viewAvailableNFTs() external returns (uint256[] memory){
+        uint256[] memory availableNFTs = new uint256[](tokenIDs.length);
+        for (uint i = 0; i < tokenIDs.length; i++){
+            if (ownedNFTs[tokenIDs[i]] == address(0)){
+                availableNFTs.push(tokenIDs[i]);
+            }
+        }
+        return availableNFTs;
     }
 }
