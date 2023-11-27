@@ -1,6 +1,9 @@
-from flask import Flask, render_template
+import os
+
+from flask import Flask, render_template, url_for
 
 app = Flask(__name__, template_folder='templates')
+# dict = {"orange1": }
 
 
 @app.route("/")
@@ -15,7 +18,7 @@ def nfts():
 
 @app.route("/account")
 def account():
-    return render_template("user_page.html")
+    return render_template("user_page.html", image1=url_for('static', filename='img.png'))
     # return render_template("user_page.html", title="Hello World")
 
 
