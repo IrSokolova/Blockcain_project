@@ -5,6 +5,10 @@
 <h1>NFTs page</h1>
 <p>NFTs page</p>
 
+{% for image in images %}
+    <li><img src="{{ image }}" width="142" height="142"></li>
+{% endfor %}
+
 <form action="/">
   <button name="backButton" type="submit">Go back</button>
 </form>

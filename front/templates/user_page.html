@@ -11,15 +11,9 @@
 
 <h2>My NFTs</h2>
 
-<img src="{{ image1 }}" alt="NFT1" width="142" height="142">
-
-<img src="../../pictures/img_1.png" alt="NFT1" width="142" height="142">
-
-<img src="../../pictures/img_2.png" alt="NFT1" width="142" height="142">
-
-<img src="../../pictures/img_3.png" alt="NFT1" width="142" height="142">
-
-<img src="../../pictures/img_4.png" alt="NFT1" width="142" height="142">
+{% for image in images %}
+    <li><img src="{{ image }}" width="142" height="142"></li>
+{% endfor %}
 
 </body>
 </html>
