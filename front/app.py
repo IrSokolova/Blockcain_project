@@ -12,17 +12,20 @@ def index():
 
 @app.route("/nfts")
 def nfts():
-    images = [url_for('static', filename=nft.pic_url) for nft in store.nfts]
+    images = [url_for('static', filename=nft.pic_path) for nft in store.nfts]
     return render_template("nfts.html", images=images)
 
 
 @app.route("/account")
 def account():
     username = request.args.get('username')  # todo no such username
-    images = [url_for('static', filename=nft.pic_url) for nft in store.users[username].nfts]
+    images = [url_for('static', filename=nft.pic_path) for nft in store.users[username].nfts]
     print(images)
 
     return render_template("user_page.html", images=images)
+
+
+# api for bot below
 
 
 @app.route("/registration")
@@ -32,6 +35,16 @@ def registration():  # todo addr or uname already exists
     store.registration(address, username)
     print(store.users)
     return "registered"
+
+
+@app.route("/user_exists")
+def user_exists():
+    username = request.args.get('username')
+    return username_exists(username)
+
+
+def username_exists(username):
+    return str(username in store.users.keys())
 
 
 def run_front():
