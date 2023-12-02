@@ -5,10 +5,13 @@
 <h1>NFTs page</h1>
 <p>NFTs page</p>
 
-{% for image in images %}
+{% for nft in nfts %}
     <li>
-        <img src="{{ image }}" width="142" height="142">
-        <button name="buyButton" type="submit">Buy NFT</button>
+        <img src="{{ url_for('static', filename=nft.pic_path) }}" width="142" height="142">
+
+        <form action="/nft_page?image={{ nft.nft_id }}">
+          <button name="backButton" type="submit">Go to NFT page</button>
+        </form>
     </li>
 {% endfor %}
 

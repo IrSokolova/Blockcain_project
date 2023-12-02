@@ -13,6 +13,13 @@ def index():
 @app.route("/nfts")
 def nfts():
     images = [url_for('static', filename=nft.pic_path) for nft in store.nfts]
+    return render_template("nfts.html", nfts=store.nfts)
+    # return render_template("nfts.html", images=images)
+
+
+@app.route("/nft_page")
+def nft_page():
+    images = [url_for('static', filename=nft.pic_path) for nft in store.nfts]
     return render_template("nfts.html", images=images)
 
 

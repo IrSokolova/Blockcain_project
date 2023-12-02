@@ -23,14 +23,15 @@ dp = Dispatcher()
 dp.include_router(router)
 logging.basicConfig(level=logging.INFO)
 
+unauthorized_msg = 'It seems like you are using our bot in the first time. Please, use /registration or /login'
+
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     if message.from_user.id in tg_users.keys():
         await message.answer("Hello, " + tg_users[message.from_user.id])
     else:
-        await message.answer("It seems like you are using our bot in the first time. "
-                             "Please, use /registration or /login")
+        await message.answer(unauthorized_msg)
 
 
 @router.message(Command("registration"))
@@ -45,9 +46,31 @@ async def cmd_login(message: types.Message, state: FSMContext):
     await message.answer("Enter your new username")
 
 
+@router.message(Command("commands"))
+async def cmd_nfts_shop(message: types.Message):
+    commands = ('/start\n'
+                '/registration\n'
+                '/login\n'
+                '/nfts_shop\n'
+                'available_nfts\n')
+    await message.answer("Available commands:\n" + commands)
+
+
 @router.message(Command("nfts_shop"))
 async def cmd_nfts_shop(message: types.Message):
     await message.answer("Check available NFTs here: http://127.0.0.1:8081/nfts")
+
+
+@router.message(Command("available_nfts"))
+async def cmd_nfts_shop(message: types.Message):
+    if message.from_user.id in tg_users.keys():
+        pass  # todo return name or id + nft page
+
+    else:
+        await message.answer(unauthorized_msg)
+
+
+# on state
 
 
 @router.message(Form.REGISTRATION)
