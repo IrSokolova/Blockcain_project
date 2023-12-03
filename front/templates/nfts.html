@@ -9,8 +9,9 @@
     <li>
         <img src="{{ url_for('static', filename=nft.pic_path) }}" width="142" height="142">
 
-        <form action="/nft_page?image={{ nft.nft_id }}">
-          <button name="backButton" type="submit">Go to NFT page</button>
+        <form action="/nft_page" method="GET">
+            <input type="hidden" name="nft_id" value="{{ nft.nft_id }}">
+          <button name="nftPageButton" type="submit">Go to NFT page</button>
         </form>
     </li>
 {% endfor %}
