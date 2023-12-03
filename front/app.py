@@ -50,6 +50,23 @@ def user_exists():
     return username_exists(username)
 
 
+@app.route("/list_nfts")
+def list_nfts():
+    return form_nfts_list()
+
+
+def form_nfts_list():
+    lst = ""
+    for nft in store.nfts:
+        lst += "token id: "
+        lst += str(nft.nft_id)
+        lst += ", link: "
+        lst += "http://127.0.0.1:8081/nft_page?nft_id="
+        lst += str(nft.nft_id)
+        lst += "\n"
+    return lst
+
+
 def username_exists(username):
     return str(username in store.users.keys())
 

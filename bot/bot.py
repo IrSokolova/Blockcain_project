@@ -52,7 +52,7 @@ async def cmd_nfts_shop(message: types.Message):
                 '/registration\n'
                 '/login\n'
                 '/nfts_shop\n'
-                'available_nfts\n')
+                '/available_nfts\n')
     await message.answer("Available commands:\n" + commands)
 
 
@@ -64,8 +64,9 @@ async def cmd_nfts_shop(message: types.Message):
 @router.message(Command("available_nfts"))
 async def cmd_nfts_shop(message: types.Message):
     if message.from_user.id in tg_users.keys():
-        pass  # todo return name or id + nft page
-
+        response = requests.get('http://127.0.0.1:8081/list_nfts')
+        print(response.text)
+        await message.answer('Available NFTs:\n' + response.text)
     else:
         await message.answer(unauthorized_msg)
 
