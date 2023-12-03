@@ -5,3 +5,4 @@ class Form(StatesGroup):
     START = State()
     REGISTRATION = State()
     LOGIN = State()
+    BUY = State()

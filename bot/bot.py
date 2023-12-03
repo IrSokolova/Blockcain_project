@@ -52,7 +52,8 @@ async def cmd_nfts_shop(message: types.Message):
                 '/registration\n'
                 '/login\n'
                 '/nfts_shop\n'
-                '/available_nfts\n')
+                '/available_nfts\n'
+                '/buy_nft\n')
     await message.answer("Available commands:\n" + commands)
 
 
@@ -66,12 +67,39 @@ async def cmd_nfts_shop(message: types.Message):
     if message.from_user.id in tg_users.keys():
         response = requests.get('http://127.0.0.1:8081/list_nfts')
         print(response.text)
-        await message.answer('Available NFTs:\n' + response.text)
+        await message.answer('Available NFTs:\n' + response.text + '\n Would you like to buy one? /buy_nft')
+    else:
+        await message.answer(unauthorized_msg)
+
+
+@router.message(Command("buy_nft"))
+async def cmd_nfts_shop(message: types.Message, state: FSMContext):
+    if message.from_user.id in tg_users.keys():
+        await state.set_state(Form.BUY)
+        await message.answer("Enter the id of the NFT that you want to buy")
     else:
         await message.answer(unauthorized_msg)
 
 
 # on state
+
+
+@router.message(Form.BUY)
+async def red_get_username(message: types.Message, state: FSMContext):
+    await state.set_state(Form.START)
+
+    id = message.text
+    response = requests.get('http://127.0.0.1:8081/list_nfts_ids')
+    print(response.text)
+
+    ids_lst = [id for id in response.text.split(' ')]
+    print(ids_lst)
+
+    if id in ids_lst:  # todo buy
+        await message.answer("Thanks, " + tg_users[message.from_user.id])
+    else:
+        await message.answer('Probably, the token with id=' + id +
+                             ' was sold. Check /available_nfts to see available NFTs')
 
 
 @router.message(Form.REGISTRATION)

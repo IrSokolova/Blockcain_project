@@ -55,6 +55,11 @@ def list_nfts():
     return form_nfts_list()
 
 
+@app.route("/list_nfts_ids")
+def list_nfts_ids():
+    return form_nfts_ids_list()
+
+
 def form_nfts_list():
     lst = ""
     for nft in store.nfts:
@@ -64,6 +69,14 @@ def form_nfts_list():
         lst += "http://127.0.0.1:8081/nft_page?nft_id="
         lst += str(nft.nft_id)
         lst += "\n"
+    return lst
+
+
+def form_nfts_ids_list():
+    lst = ""
+    for nft in store.nfts:
+        lst += str(nft.nft_id)
+        lst += " "
     return lst
 
 
