@@ -53,7 +53,9 @@ async def cmd_nfts_shop(message: types.Message):
                 '/login\n'
                 '/nfts_shop\n'
                 '/available_nfts\n'
-                '/buy_nft\n')
+                '/buy_nft\n'
+                '/my_nfts\n'
+                '/sell_nft\n')
     await message.answer("Available commands:\n" + commands)
 
 
@@ -81,7 +83,44 @@ async def cmd_nfts_shop(message: types.Message, state: FSMContext):
         await message.answer(unauthorized_msg)
 
 
+@router.message(Command("my_nfts"))
+async def cmd_nfts_shop(message: types.Message, state: FSMContext):
+    if message.from_user.id in tg_users.keys():
+        response = requests.get('http://127.0.0.1:8081/list_my_nfts?username=' + tg_users[message.from_user.id])
+        print(response.text)
+        await message.answer('Your NFTs:\n' + response.text + '\n Would you like to sell one? /sell_nft')
+    else:
+        await message.answer(unauthorized_msg)
+
+
+@router.message(Command("sell_nft"))
+async def cmd_nfts_shop(message: types.Message, state: FSMContext):
+    if message.from_user.id in tg_users.keys():
+        await state.set_state(Form.SELL)
+        await message.answer("Enter the id of the NFT that you want to sell")
+    else:
+        await message.answer(unauthorized_msg)
+
+
 # on state
+
+
+@router.message(Form.SELL)
+async def red_get_username(message: types.Message, state: FSMContext):
+    await state.set_state(Form.START)
+
+    nft_id = message.text
+    print(nft_id)
+    response = requests.get('http://127.0.0.1:8081/list_my_nfts_ids?username=' + tg_users[message.from_user.id])
+
+    ids_lst = [nft_id for nft_id in response.text.split(' ')]
+    print(ids_lst)
+
+    if nft_id in ids_lst:  # todo sell
+        await message.answer("Thanks, " + tg_users[message.from_user.id])
+    else:
+        await message.answer('You do not have a token with id=' + nft_id +
+                             '. Check /my_nfts to see your NFTs')
 
 
 @router.message(Form.BUY)
@@ -90,9 +129,8 @@ async def red_get_username(message: types.Message, state: FSMContext):
 
     id = message.text
     response = requests.get('http://127.0.0.1:8081/list_nfts_ids')
-    print(response.text)
 
-    ids_lst = [id for id in response.text.split(' ')]
+    ids_lst = [nft_id for nft_id in response.text.split(' ')]
     print(ids_lst)
 
     if id in ids_lst:  # todo buy
@@ -108,7 +146,7 @@ async def red_get_username(message: types.Message, state: FSMContext):
 
     username = message.text
     tg_users[message.from_user.id] = username
-    registration("", username)
+    registration("", username)  # todo change addr
     await message.answer("Registration succeed. Thanks, " + username)
 
 

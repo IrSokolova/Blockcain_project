@@ -6,3 +6,4 @@ class Form(StatesGroup):
     REGISTRATION = State()
     LOGIN = State()
     BUY = State()
+    SELL = State()

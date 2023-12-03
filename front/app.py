@@ -60,6 +60,40 @@ def list_nfts_ids():
     return form_nfts_ids_list()
 
 
+@app.route("/list_my_nfts")
+def list_my_nfts():
+    username = request.args.get('username')
+    return form_my_nfts_list(username)
+
+
+@app.route("/list_my_nfts_ids")
+def list_my_nfts_ids():
+    username = request.args.get('username')
+    return form_my_nfts_ids_list(username)
+
+
+def form_my_nfts_list(username):
+    user = store.users[username]
+    lst = ""
+    for nft in user.nfts:
+        lst += "token id: "
+        lst += str(nft.nft_id)
+        lst += ", link: "
+        lst += "http://127.0.0.1:8081/nft_page?nft_id="
+        lst += str(nft.nft_id)
+        lst += "\n"
+    return lst
+
+
+def form_my_nfts_ids_list(username):
+    user = store.users[username]
+    lst = ""
+    for nft in user.nfts:
+        lst += str(nft.nft_id)
+        lst += " "
+    return lst
+
+
 def form_nfts_list():
     lst = ""
     for nft in store.nfts:
