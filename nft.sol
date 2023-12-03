@@ -1,73 +1,65 @@
-// SPDX-License-Identifier: UNLICENSED
+//Contract based on [https://docs.openzeppelin.com/contracts/3.x/erc721](https://docs.openzeppelin.com/contracts/3.x/erc721)
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+contract My_NFT{
+    // Token name
+    string public _name;
 
+    // Token symbol
+    string public _symbol;
 
-contract Randomizer
-{
-    // Initializing the state variable
-    uint randNonce = 0;
+    mapping(uint256 tokenId => address) public _owners;
 
-    // Defining a function to generate
-    // a random number
-    function randMod(uint _modulus) external returns(uint)
-    {
-        // increase nonce
-        randNonce++;
-        return uint(keccak256(abi.encodePacked(block.timestamp,msg.sender,randNonce))) % _modulus;
-    }
-}
+    mapping(address owner => uint256) public _balances;
 
+    uint256[] public tokenIDs;
 
-contract BasicNFT is ERC721URIStorage {
-    uint256[] tokenIDs;
-    mapping (uint256 => uint256) pricesOfNFTs;
-    mapping (address => uint256) balances;
-    mapping (uint256 => address) ownedNFTs;
-    Randomizer randomizer;
-
-    constructor() ERC721("BasicNFT", "BNFT") {
-        createNFTs(5);
+    constructor() payable  {
+        _name = "OrangeNFT";
+        _symbol = "ONFT";
     }
 
-    function createNFTs(uint NFTsCount) private{
-        currentID = 1;
-        for(uint i = 0; i < NFTsCount; i++){
+    function mintNFTs() public {
+        uint256 currentID = 1;
+        for(uint i = 0; i < 5; i++){
             tokenIDs.push(currentID);
 
-            pricesOfNFTs[currentID] = randomizer.randMod(10);
-            ownedNFTs[currentID] = address(0);
+            _owners[currentID] = address(0);
             currentID++;
         }
     }
 
-    function buy(uint256 tokenID) public {
-        require(ownedNFTs[tokenID] != address(0), "This NFT is already owned");
-        require(balances[msg.sender] >= pricesOfNFTs[tokenID], "You dont have enough coin to buy this NFT");
+    function buyNFT(uint256 tokenID) public payable returns (bool){
+        require(_owners[tokenID] != address(0), "This NFT is already owned");
+        require(_balances[msg.sender] >= 1, "You dont have enough coin to buy this NFT");
 
-//        Reduce the balance of the buyer
-        balances[msg.sender] = balances[msg.sender] - pricesOfNFTs[tokenID];
-//        Mark this NFT as taken
-        ownedNFTs[tokenID] = msg.sender;
+        //        Reduce the balance of the buyer
+        _balances[msg.sender] = _balances[msg.sender] - 1;
+        //        Mark this NFT as taken
+        _owners[tokenID] = msg.sender;
+        return true;
     }
 
-    function sell(uint tokenID) public {
-        require(ownedNFTs[tokenID] == msg.sender, "You aren't the owner of this NFT");
+    function sellNFT(uint256 tokenID) public payable returns (bool){
+        require(_owners[tokenID] == msg.sender, "You do not own this NFT");
 
-//        Increase the balance of the seller
-        balances[msg.sender] = balances[msg.sender] + pricesOfNFTs[tokenID];
-//        Change address of NFT
-        ownedNFTs[tokenID] = address(0);
+        _balances[msg.sender] = _balances[msg.sender] + 1;
+        _owners[tokenID] = address(0);
+        return true;
+
     }
 
-    function viewAvailableNFTs() external returns (uint256[] memory){
+    function viewAvailableNFTs() view external returns (uint256[] memory){
         uint256[] memory availableNFTs = new uint256[](tokenIDs.length);
+        uint256 index = 0;
         for (uint i = 0; i < tokenIDs.length; i++){
-            if (ownedNFTs[tokenIDs[i]] == address(0)){
-                availableNFTs.push(tokenIDs[i]);
+            if (_owners[tokenIDs[i]] == address(0)){
+                availableNFTs[index] = tokenIDs[i];
+                index ++;
             }
         }
         return availableNFTs;
     }
+
 }
