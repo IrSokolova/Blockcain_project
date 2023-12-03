@@ -3,11 +3,12 @@
 <body>
 
 <h1>NFT page</h1>
-<p>{{ nft.nft_id }}</p>
+<h2>{{ nft.nft_id }}</h2>
+<p>Owner: {{ nft.owner }}</p>
 
 <img src="{{ url_for('static', filename=nft.pic_path) }}" width="142" height="142">
 
-<button name="buyButton" type="submit">Buy NFT {{ nft_id }}</button>
+<button name="buyButton" type="submit">Buy NFT {{ nft.nft_id }}</button>
 
 <form action="/nfts">
   <button name="backButton" type="submit">Go back</button>

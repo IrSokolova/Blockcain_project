@@ -117,6 +117,9 @@ async def red_get_username(message: types.Message, state: FSMContext):
     print(ids_lst)
 
     if nft_id in ids_lst:  # todo sell
+        response = requests.get('http://127.0.0.1:8081/sell?username=' + tg_users[message.from_user.id] +
+                                '&nft_id=' + nft_id)
+        print(response)
         await message.answer("Thanks, " + tg_users[message.from_user.id])
     else:
         await message.answer('You do not have a token with id=' + nft_id +
@@ -127,16 +130,19 @@ async def red_get_username(message: types.Message, state: FSMContext):
 async def red_get_username(message: types.Message, state: FSMContext):
     await state.set_state(Form.START)
 
-    id = message.text
+    nft_id = message.text
     response = requests.get('http://127.0.0.1:8081/list_nfts_ids')
 
     ids_lst = [nft_id for nft_id in response.text.split(' ')]
     print(ids_lst)
 
-    if id in ids_lst:  # todo buy
+    if nft_id in ids_lst:  # todo buy
+        response = requests.get('http://127.0.0.1:8081/buy?username=' + tg_users[message.from_user.id] +
+                                '&nft_id=' + nft_id)
+        print(response)
         await message.answer("Thanks, " + tg_users[message.from_user.id])
     else:
-        await message.answer('Probably, the token with id=' + id +
+        await message.answer('Probably, the token with id=' + nft_id +
                              ' was sold. Check /available_nfts to see available NFTs')
 
 

@@ -35,6 +35,34 @@ def account():
 # api for bot below
 
 
+@app.route("/buy")
+def buy():  # todo buy
+    username = request.args.get('username')
+    nft_id = request.args.get('nft_id')
+
+    nft = store.find_nft_by_id(int(nft_id))
+    print(nft)
+    if nft is not None and nft.owner == '':
+        nft.owner = username
+        store.users[username].add_nft(nft)
+        print(store.users[username])
+        return str(True)
+    return str(False)
+
+
+@app.route("/sell")
+def sell():  # todo buy
+    username = request.args.get('username')
+    nft_id = request.args.get('nft_id')
+
+    nft = store.find_nft_by_id(int(nft_id))
+    if nft is not None and nft.owner == username:
+        nft.owner = ''
+        store.users[username].remove_nft(nft)
+        return str(True)
+    return str(False)
+
+
 @app.route("/registration")
 def registration():  # todo addr or uname already exists
     username = request.args.get('username')
