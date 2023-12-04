@@ -5,7 +5,7 @@ from solcx import compile_standard, install_solc
 import json
 
 
-with open("./nft.sol", "r") as file:
+with open("../nft.sol", "r") as file:
     smart_contract_nft = file.read()
 
 install_solc("0.8.0")
@@ -71,7 +71,7 @@ print(SmartContract.all_functions())
 
 smart_contract_demo = w3.eth.contract(address=tx_receipt.contractAddress, abi=abi)
 functions = smart_contract_demo.functions
-print(functions.mintNFTs().call())
-print(functions._owners(1).call())
-print(functions.buyNFT(1).call())
+# print(functions.mintNFTs().call())
+# print(functions._owners(1).call())
+# print(functions.buyNFT(1).call())
 

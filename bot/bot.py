@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from os import getenv
 
 from aiogram import Bot, Dispatcher, types, Router
 from aiogram.filters.command import Command
@@ -7,14 +8,17 @@ from aiogram.fsm.context import FSMContext
 
 import requests
 
+from contract.contract import Contract
+from deploy import functions
 from state import Form
 
-bot_token = "6854007310:AAFfo073BeGTfC5FkE2j2MvghRMIj18kKMw"
+# bot_token = "6854007310:AAFfo073BeGTfC5FkE2j2MvghRMIj18kKMw"
 tg_users = dict()  # tg_user_id : username
+addresses = dict()  # tg_user_id : address
 
-# bot_token = getenv("BOT_TOKEN")   # todo
-# if not bot_token:
-#     exit("Error: no token provided")
+bot_token = getenv("BOT_TOKEN")   # todo
+if not bot_token:
+    exit("Error: no token provided")
 
 bot = Bot(token=bot_token)
 
@@ -24,6 +28,8 @@ dp.include_router(router)
 logging.basicConfig(level=logging.INFO)
 
 unauthorized_msg = 'It seems like you are using our bot in the first time. Please, use /registration or /login'
+
+contract = Contract(functions)
 
 
 async def set_commands():
@@ -51,7 +57,7 @@ async def cmd_start(message: types.Message):
 
 @router.message(Command("registration"))
 async def cmd_reg(message: types.Message, state: FSMContext):
-    await state.set_state(Form.REGISTRATION)
+    await state.set_state(Form.REGISTRATION_UNAME)
     await message.answer("Enter your new username")
 
 
@@ -62,7 +68,7 @@ async def cmd_login(message: types.Message, state: FSMContext):
 
 
 @router.message(Command("help"))
-async def cmd_nfts_shop(message: types.Message):
+async def cmd_help(message: types.Message):
     await message.answer("Use the menu in the lower left corner to see the available commands")
 
 
@@ -72,7 +78,7 @@ async def cmd_nfts_shop(message: types.Message):
 
 
 @router.message(Command("my_account"))
-async def cmd_nfts_shop(message: types.Message):
+async def cmd_my_account(message: types.Message):
     if message.from_user.id in tg_users.keys():
         await message.answer("You can check your account here: http://127.0.0.1:8081/account?username=" +
                              tg_users[message.from_user.id])
@@ -81,7 +87,7 @@ async def cmd_nfts_shop(message: types.Message):
 
 
 @router.message(Command("available_nfts"))
-async def available_nfts(message: types.Message):
+async def cmd_available_nfts(message: types.Message):
     if message.from_user.id in tg_users.keys():
         response = requests.get('http://127.0.0.1:8081/list_nfts')
         print(response.text)
@@ -93,7 +99,7 @@ async def available_nfts(message: types.Message):
 
 
 @router.message(Command("buy_nft"))
-async def cmd_nfts_shop(message: types.Message, state: FSMContext):
+async def cmd_buy_nft(message: types.Message, state: FSMContext):
     if message.from_user.id in tg_users.keys():
         await state.set_state(Form.BUY)
         await message.answer("Enter the id of the NFT that you want to buy")
@@ -102,7 +108,7 @@ async def cmd_nfts_shop(message: types.Message, state: FSMContext):
 
 
 @router.message(Command("my_nfts"))
-async def cmd_nfts_shop(message: types.Message, state: FSMContext):
+async def cmd_my_nfts(message: types.Message, state: FSMContext):
     if message.from_user.id in tg_users.keys():
         response = requests.get('http://127.0.0.1:8081/list_my_nfts?username=' +
                                 tg_users[message.from_user.id])
@@ -115,7 +121,7 @@ async def cmd_nfts_shop(message: types.Message, state: FSMContext):
 
 
 @router.message(Command("sell_nft"))
-async def cmd_nfts_shop(message: types.Message, state: FSMContext):
+async def cmd_sell_nft(message: types.Message, state: FSMContext):
     if message.from_user.id in tg_users.keys():
         await state.set_state(Form.SELL)
         await message.answer("Enter the id of the NFT that you want to sell")
@@ -127,7 +133,7 @@ async def cmd_nfts_shop(message: types.Message, state: FSMContext):
 
 
 @router.message(Form.SELL)
-async def red_get_username(message: types.Message, state: FSMContext):
+async def sell(message: types.Message, state: FSMContext):
     await state.set_state(Form.START)
 
     nft_id = message.text
@@ -138,7 +144,8 @@ async def red_get_username(message: types.Message, state: FSMContext):
     ids_lst = [nft_id for nft_id in response.text.split(' ')]
     print(ids_lst)
 
-    if nft_id in ids_lst:  # todo sell
+    if nft_id in ids_lst:
+        contract.sell_nft(int(nft_id))
         response = requests.get('http://127.0.0.1:8081/sell?username=' +
                                 tg_users[message.from_user.id] +
                                 '&nft_id=' + nft_id)
@@ -151,7 +158,7 @@ async def red_get_username(message: types.Message, state: FSMContext):
 
 
 @router.message(Form.BUY)
-async def red_get_username(message: types.Message, state: FSMContext):
+async def buy(message: types.Message, state: FSMContext):
     await state.set_state(Form.START)
 
     nft_id = message.text
@@ -160,30 +167,45 @@ async def red_get_username(message: types.Message, state: FSMContext):
     ids_lst = [nft_id for nft_id in response.text.split(' ')]
     print(ids_lst)
 
-    if nft_id in ids_lst:  # todo buy
-        response = requests.get('http://127.0.0.1:8081/buy?username=' +
-                                tg_users[message.from_user.id] +
-                                '&nft_id=' + nft_id)
-        print(response)
-        await message.answer("Thanks, " + tg_users[message.from_user.id])
+    if nft_id in ids_lst:
+        try:
+            contract.buy_nft(int(nft_id))
+            response = requests.get('http://127.0.0.1:8081/buy?username=' +
+                                    tg_users[message.from_user.id] +
+                                    '&nft_id=' + nft_id)
+            print(response)
+            await message.answer("Thanks, " + tg_users[message.from_user.id])
+        except Exception as e:
+            await message.answer(error_msg(e))
+
     else:
         await message.answer('Probably, the token with id=' +
                              nft_id +
                              ' was sold. Check /available_nfts to see available NFTs')
 
 
-@router.message(Form.REGISTRATION)
-async def red_get_username(message: types.Message, state: FSMContext):
-    await state.set_state(Form.START)
+@router.message(Form.REGISTRATION_UNAME)
+async def reg_uname(message: types.Message, state: FSMContext):
+    await state.set_state(Form.REGISTRATION_ADDR)
 
     username = message.text
     tg_users[message.from_user.id] = username
-    registration(username, "")  # todo change addr
-    await message.answer("Registration succeed. Thanks, " + username)
+    registration(username, "")
+    await message.answer("Enter your address")
+
+
+@router.message(Form.REGISTRATION_ADDR)
+async def reg_addr(message: types.Message, state: FSMContext):
+    await state.set_state(Form.START)
+
+    address = message.text
+    addresses[message.from_user.id] = address
+    registration(tg_users[message.from_user.id], address)
+    await message.answer("Registration succeed. Thanks, " + tg_users[message.from_user.id])
 
 
 @router.message(Form.LOGIN)
-async def red_get_username(message: types.Message, state: FSMContext):
+async def login(message: types.Message, state: FSMContext):
     await state.set_state(Form.START)
 
     username = message.text
@@ -202,6 +224,10 @@ def registration(username, address):
                             '&username=' +
                             username)
     print(response)
+
+
+def error_msg(e):
+    return "Error occurred: " + str(e).split('VM Exception while processing transaction: revert')[1].split("'")[0]
 
 
 async def run_bot():
