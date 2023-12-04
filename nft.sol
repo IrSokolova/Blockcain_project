@@ -19,9 +19,9 @@ contract NFT{
 
     mapping(uint256 => address) private _tokenApprovals;
 
-    constructor(string memory name_, string memory symbol_) {
-        _name = name_;
-        _symbol = symbol_;
+    constructor() {
+        _name = "OrangeNFT";
+        _symbol = "ONFT";
         my_address = msg.sender;
     }
 
