@@ -31,21 +31,21 @@ contract My_NFT{
         return true;
     }
 
-    function buyNFT(uint256 tokenID) public payable returns (bool){
+    function buyNFT(uint256 tokenID, address addr) public payable returns (bool){
         require(_owners[tokenID] == address(0), "This NFT is already owned");
-        require(_balances[msg.sender] >= 1, "You dont have enough coin to buy this NFT");
+        require(_balances[addr] >= 1, "You dont have enough coin to buy this NFT");
 
         //        Reduce the balance of the buyer
-        _balances[msg.sender] = _balances[msg.sender] - 1;
+        _balances[addr] = _balances[addr] - 1;
         //        Mark this NFT as taken
-        _owners[tokenID] = msg.sender;
+        _owners[tokenID] = addr;
         return true;
     }
 
-    function sellNFT(uint256 tokenID) public payable returns (bool){
-        require(_owners[tokenID] == msg.sender, "You do not own this NFT");
+    function sellNFT(uint256 tokenID, address addr) public payable returns (bool){
+        require(_owners[tokenID] == addr, "You do not own this NFT");
 
-        _balances[msg.sender] = _balances[msg.sender] + 1;
+        _balances[addr] = _balances[addr] + 1;
         _owners[tokenID] = address(0);
         return true;
     }

@@ -145,7 +145,7 @@ async def sell(message: types.Message, state: FSMContext):
     print(ids_lst)
 
     if nft_id in ids_lst:
-        contract.sell_nft(int(nft_id))
+        contract.sell_nft(int(nft_id), addresses[message.from_user.id])
         response = requests.get('http://127.0.0.1:8081/sell?username=' +
                                 tg_users[message.from_user.id] +
                                 '&nft_id=' + nft_id)
@@ -169,7 +169,7 @@ async def buy(message: types.Message, state: FSMContext):
 
     if nft_id in ids_lst:
         try:
-            contract.buy_nft(int(nft_id))
+            contract.buy_nft(int(nft_id), addresses[message.from_user.id])
             response = requests.get('http://127.0.0.1:8081/buy?username=' +
                                     tg_users[message.from_user.id] +
                                     '&nft_id=' + nft_id)
@@ -227,6 +227,7 @@ def registration(username, address):
 
 
 def error_msg(e):
+    print(e)
     return "Error occurred: " + str(e).split('VM Exception while processing transaction: revert')[1].split("'")[0]
 
 
