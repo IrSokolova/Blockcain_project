@@ -39,7 +39,7 @@ bytecode = compiled_sol["contracts"]["nft.sol"]["NFT"]["evm"]["bytecode"]["objec
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
 chain_id = 5777
 # my_address = "0x30afafbBedEfBF93888B7362FF49B91c8bCD546F"
-my_address = "0x5BcE8A16e63fe61c4205581412cD93824871fd47"
+my_address = os.getenv("MY_ADDRESS")
 private_key = os.getenv("PRIVATE_KEY")
 
 SmartContract = w3.eth.contract(abi=abi, bytecode=bytecode)
