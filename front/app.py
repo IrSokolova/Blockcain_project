@@ -12,7 +12,8 @@ def index():
 
 @app.route("/nfts")
 def nfts():
-    return render_template("nfts.html", nfts=store.nfts)
+    no_owner_nfts = [nft for nft in store.nfts if nft.owner == '']
+    return render_template("nfts.html", nfts=no_owner_nfts)
 
 
 @app.route("/nft_page")
@@ -29,7 +30,7 @@ def account():
     images = [url_for('static', filename=nft.pic_path) for nft in store.users[username].nfts]
     print(images)
 
-    return render_template("user_page.html", images=images)
+    return render_template("user_page.html", images=images, user=store.users[username])
 
 
 # api for bot below
@@ -125,12 +126,13 @@ def form_my_nfts_ids_list(username):
 def form_nfts_list():
     lst = ""
     for nft in store.nfts:
-        lst += "token id: "
-        lst += str(nft.nft_id)
-        lst += ", link: "
-        lst += "http://127.0.0.1:8081/nft_page?nft_id="
-        lst += str(nft.nft_id)
-        lst += "\n"
+        if nft.owner == '':
+            lst += "token id: "
+            lst += str(nft.nft_id)
+            lst += ", link: "
+            lst += "http://127.0.0.1:8081/nft_page?nft_id="
+            lst += str(nft.nft_id)
+            lst += "\n"
     return lst
 
 
