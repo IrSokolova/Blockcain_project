@@ -54,9 +54,9 @@ contract NFT{
     }
 
     function transferFrom(address from, address to, uint256 tokenId) public virtual {
-//        require(to == address(0), "Null address");
+        require(to == address(0), "Null address");
         address previousOwner = _update(to, tokenId);
-//        require(previousOwner == from);
+        require(previousOwner == from);
 
     }
 
@@ -71,8 +71,8 @@ contract NFT{
     }
 
     function buyNFT(uint256 tokenID, address addr) public payable returns (bool){
-//        require(_owners[tokenID] == my_address, "This NFT is already owned");
-//        require(_balances[addr] >= 1, "You dont have enough coin to buy this NFT");
+        require(_owners[tokenID] == my_address, "This NFT is already owned");
+        require(_balances[addr] >= 1, "You dont have enough coin to buy this NFT");
 
         transferFrom(my_address, addr, tokenID);
 
@@ -80,7 +80,7 @@ contract NFT{
     }
 
     function sellNFT(uint256 tokenID, address addr) public payable returns (bool){
-//        require(_owners[tokenID] == addr, "You do not own this NFT");
+        require(_owners[tokenID] == addr, "You do not own this NFT");
 
         transferFrom(addr, my_address, tokenID);
         return true;
