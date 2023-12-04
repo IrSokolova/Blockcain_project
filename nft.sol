@@ -9,9 +9,9 @@ contract My_NFT{
     // Token symbol
     string public _symbol;
 
-    mapping(uint256 tokenId => address) public _owners;
+    mapping(uint256 => address) public _owners;
 
-    mapping(address owner => uint256) public _balances;
+    mapping(address => uint256) public _balances;
 
     uint256[] public tokenIDs;
 
@@ -20,7 +20,7 @@ contract My_NFT{
         _symbol = "ONFT";
     }
 
-    function mintNFTs() public {
+    function mintNFTs() public returns(bool) {
         uint256 currentID = 1;
         for(uint i = 0; i < 5; i++){
             tokenIDs.push(currentID);
@@ -28,10 +28,11 @@ contract My_NFT{
             _owners[currentID] = address(0);
             currentID++;
         }
+        return true;
     }
 
     function buyNFT(uint256 tokenID) public payable returns (bool){
-        require(_owners[tokenID] != address(0), "This NFT is already owned");
+        require(_owners[tokenID] == address(0), "This NFT is already owned");
         require(_balances[msg.sender] >= 1, "You dont have enough coin to buy this NFT");
 
         //        Reduce the balance of the buyer
@@ -47,7 +48,6 @@ contract My_NFT{
         _balances[msg.sender] = _balances[msg.sender] + 1;
         _owners[tokenID] = address(0);
         return true;
-
     }
 
     function viewAvailableNFTs() view external returns (uint256[] memory){
@@ -61,5 +61,4 @@ contract My_NFT{
         }
         return availableNFTs;
     }
-
 }
