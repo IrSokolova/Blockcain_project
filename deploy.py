@@ -30,15 +30,16 @@ with open("compiled_code.json","w") as file:
     json.dump(compiled_sol,file)
 
 # get abi
-abi = compiled_sol["contracts"]["nft.sol"]["My_NFT"]["abi"]
+abi = compiled_sol["contracts"]["nft.sol"]["NFT"]["abi"]
 
 # bytecode
-bytecode = compiled_sol["contracts"]["nft.sol"]["My_NFT"]["evm"]["bytecode"]["object"]
+bytecode = compiled_sol["contracts"]["nft.sol"]["NFT"]["evm"]["bytecode"]["object"]
 
 
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
 chain_id = 5777
-my_address = "0x5BcE8A16e63fe61c4205581412cD93824871fd47"
+my_address = "0x30afafbBedEfBF93888B7362FF49B91c8bCD546F"
+# my_address = "0x5BcE8A16e63fe61c4205581412cD93824871fd47"
 private_key = os.getenv("PRIVATE_KEY")
 
 SmartContract = w3.eth.contract(abi=abi, bytecode=bytecode)
@@ -74,4 +75,3 @@ functions = smart_contract_demo.functions
 # print(functions.mintNFTs().call())
 # print(functions._owners(1).call())
 # print(functions.buyNFT(1).call())
-
