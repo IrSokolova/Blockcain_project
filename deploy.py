@@ -38,8 +38,8 @@ bytecode = compiled_sol["contracts"]["nft.sol"]["NFT"]["evm"]["bytecode"]["objec
 
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
 chain_id = 5777
-my_address = "0x30afafbBedEfBF93888B7362FF49B91c8bCD546F"
-# my_address = "0x5BcE8A16e63fe61c4205581412cD93824871fd47"
+# my_address = "0x30afafbBedEfBF93888B7362FF49B91c8bCD546F"
+my_address = "0x5BcE8A16e63fe61c4205581412cD93824871fd47"
 private_key = os.getenv("PRIVATE_KEY")
 
 SmartContract = w3.eth.contract(abi=abi, bytecode=bytecode)
@@ -75,3 +75,16 @@ functions = smart_contract_demo.functions
 # print(functions.mintNFTs().call())
 # print(functions._owners(1).call())
 # print(functions.buyNFT(1).call())
+
+
+def sign(trans):
+    trans = functions.build_transaction({
+        "chainId": w3.eth.chain_id,
+        "gasPrice": w3.eth.gas_price,
+        "from": my_address,
+        "nonce": nonce,
+    })
+    signed_txn = w3.eth.account.sign_transaction(trans, private_key=private_key)
+    # tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    # tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+

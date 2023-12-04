@@ -139,8 +139,9 @@ def form_nfts_list():
 def form_nfts_ids_list():
     lst = ""
     for nft in store.nfts:
-        lst += str(nft.nft_id)
-        lst += " "
+        if (nft.owner == ''):
+            lst += str(nft.nft_id)
+            lst += " "
     return lst
 
 

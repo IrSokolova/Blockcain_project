@@ -168,7 +168,7 @@ async def buy(message: types.Message, state: FSMContext):
 
     if nft_id in ids_lst:
         try:
-            # contract.buy_nft(int(nft_id), addresses[message.from_user.id])
+            contract.buy_nft(int(nft_id), addresses[message.from_user.id])
             response = requests.get('http://127.0.0.1:8081/buy?username=' +
                                     tg_users[message.from_user.id] +
                                     '&nft_id=' + nft_id)
