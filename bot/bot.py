@@ -12,11 +12,10 @@ from contract.contract import Contract
 from deploy import functions
 from state import Form
 
-# bot_token = "6854007310:AAFfo073BeGTfC5FkE2j2MvghRMIj18kKMw"
 tg_users = dict()  # tg_user_id : username
 addresses = dict()  # tg_user_id : address
 
-bot_token = getenv("BOT_TOKEN")   # todo
+bot_token = getenv("BOT_TOKEN")
 if not bot_token:
     exit("Error: no token provided")
 
@@ -169,7 +168,7 @@ async def buy(message: types.Message, state: FSMContext):
 
     if nft_id in ids_lst:
         try:
-            contract.buy_nft(int(nft_id), addresses[message.from_user.id])
+            # contract.buy_nft(int(nft_id), addresses[message.from_user.id])
             response = requests.get('http://127.0.0.1:8081/buy?username=' +
                                     tg_users[message.from_user.id] +
                                     '&nft_id=' + nft_id)
@@ -228,7 +227,7 @@ def registration(username, address):
 
 def error_msg(e):
     print(e)
-    return "Error occurred: " + str(e).split('VM Exception while processing transaction: revert')[1].split("'")[0]
+    return "Error occurred: " + str(e)
 
 
 async def run_bot():
